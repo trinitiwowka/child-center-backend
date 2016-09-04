@@ -169,6 +169,7 @@
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\ArticleController.cs" />
     <Compile Include="Images\ImageMultipartFormDataStreamProvider.cs" />
+    <Compile Include="Models\ArticleModel.cs" />
     <Compile Include="Models\RegistrationModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
