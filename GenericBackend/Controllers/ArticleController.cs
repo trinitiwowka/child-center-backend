@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Http;
 using GenericBackend.DataModels.Article;
 using GenericBackend.Models;
@@ -42,23 +41,25 @@ namespace GenericBackend.Controllers
             return Ok();
         }
 
+        /*        [HttpGet]
+                public async Task<IHttpActionResult> Get()
+                {
+
+                    return Ok(await GetAllArticles());
+                }
+
+                private Task<List<Article>> GetAllArticles()
+                {
+                    var user = UserModel.GetUserInfo(User);
+                    var query = _unitOfWork.Articles.AsQueryable();
+                    if (!user.IsSuperUser)
+                        query = _unitOfWork.Articles.Where(x => x.User == user.Name);
+
+                    return Task.Factory.StartNew(() => query.ToList());
+                }*/
+
         [HttpGet]
-        public async Task<IHttpActionResult> Get()
-        {
-
-            return Ok(await GetAllArticles());
-        }
-
-        private Task<List<Article>> GetAllArticles()
-        {
-            var user = UserModel.GetUserInfo(User);
-            var query = _unitOfWork.Articles.AsQueryable();
-            if (!user.IsSuperUser)
-                query = _unitOfWork.Articles.Where(x => x.User == user.Name);
-
-            return Task.Factory.StartNew(() => query.ToList());
-        }
-
+        [Route("number/{id}")]
         public IHttpActionResult GetArticle(string id)
         {
             try
@@ -71,5 +72,36 @@ namespace GenericBackend.Controllers
             }
         }
 
+        #region TestPart
+
+        [HttpGet]
+        public async Task<IHttpActionResult> Get()
+        {
+
+            return Ok(await GetAllArticles());
+        }
+
+        private Task<List<Article>> GetAllArticles()
+        {
+            var article1 = new Article
+            {
+                Headline = "Test1",
+                DateOfPost = DateTime.UtcNow,
+                FullText = "Full Text1",
+                Summary = "Summary1"
+            };
+            var article2 = new Article
+            {
+                Headline = "Test2",
+                DateOfPost = DateTime.UtcNow,
+                FullText = "Full Text2",
+                Summary = "Summary2"
+            };
+            var newList = new List<Article> { article1, article2 };
+            var query = newList.AsQueryable();
+            return Task.Factory.StartNew(() => query.ToList());
+        }
+
+        #endregion
     }
 }
