@@ -88,8 +88,10 @@ namespace GenericBackend.Controllers
         private Task<List<ArticleModel>> GetAllArticles()
         {
             var sPath = "";
-            sPath = System.Web.Hosting.HostingEnvironment.MapPath("~/Images/news-image-1.jpg");
+            sPath = System.Web.Hosting.HostingEnvironment.MapPath("~/Images/news-image-1.png");
             var newImage = Image.FromFile(sPath);
+            var sPath2 = System.Web.Hosting.HostingEnvironment.MapPath("~/Images/news-image-2.png");
+            var newImage2= Image.FromFile(sPath2);
             var article1 = new ArticleModel
             {
                 Headline = "Test1",
@@ -102,6 +104,7 @@ namespace GenericBackend.Controllers
             {
                 Headline = "Test2",
                 DateOfPost = DateTime.UtcNow,
+                Image = TakePhoto(newImage2),
                 FullText = "Full Text2",
                 Summary = "Summary2"
             };
