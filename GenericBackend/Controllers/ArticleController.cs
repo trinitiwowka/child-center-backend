@@ -25,7 +25,8 @@ namespace GenericBackend.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult AddArticle(Article article, HttpPostedFileBase photoImg)
+        public IHttpActionResult AddArticle(Article article)
+        //public IHttpActionResult AddArticle(Article article, HttpPostedFileBase photoImg)
         {
             if (article == null)
                 return BadRequest("Article can't be null");
@@ -38,14 +39,14 @@ namespace GenericBackend.Controllers
                 Headline = article.Headline,
                 DateOfPost = DateTime.UtcNow,
                 FullText = article.FullText,
-                Image = GetPhoto(photoImg),
+                //Image = GetPhoto(photoImg),
                 Summary = article.Summary
             };
             _unitOfWork.Articles.Add(newArticle);
             return Ok();
         }
 
-        /*        [HttpGet]
+                [HttpGet]
                public async Task<IHttpActionResult> Get()
                {
 
@@ -60,7 +61,7 @@ namespace GenericBackend.Controllers
                        query = _unitOfWork.Articles.Where(x => x.User == user.Name);
 
                    return Task.Factory.StartNew(() => query.ToList());
-               }*/
+               }
 
         [HttpGet]
         [Route("number/{id}")]
@@ -77,7 +78,7 @@ namespace GenericBackend.Controllers
         }
 
         #region TestPart
-
+        /*
         [HttpGet]
         public async Task<IHttpActionResult> Get()
         {
@@ -110,12 +111,19 @@ namespace GenericBackend.Controllers
             };
             var newList = new List<ArticleModel> { article1, article2 };
             var query = newList.AsQueryable();
+            /*_unitOfWork.Articles.Add( new Article
+            {
+                Headline = "Test1",
+                DateOfPost = DateTime.UtcNow,
+                FullText = "Full Text1",
+                Summary = "Summary1"
+            });
             return Task.Factory.StartNew(() => query.ToList());
-        }
+    }*/
 
-        #endregion
+    #endregion
 
-        private byte[] GetPhoto(HttpPostedFileBase file)
+    private byte[] GetPhoto(HttpPostedFileBase file)
         {
             byte[] buffer = null;
 
