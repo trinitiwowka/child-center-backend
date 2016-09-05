@@ -158,7 +158,9 @@
     <None Include="App_Data\Images\dont-remove.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\Startup.Autofac.cs" />
