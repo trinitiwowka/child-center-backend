@@ -134,7 +134,7 @@ namespace GenericBackend.Controllers
         private string TakePhoto(Image imageIn)
         {
             byte[] imageInByteArray = ImageToByteArray(imageIn);
-            return "data:image / jpeg; base64," + Convert.ToBase64String(imageInByteArray);
+            return Convert.ToBase64String(imageInByteArray);
         }
 
         private byte[] ImageToByteArray(Image imageIn)
