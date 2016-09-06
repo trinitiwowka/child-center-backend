@@ -9,7 +9,7 @@ namespace GenericBackend.DataModels.Article
         public string Summary;
         public string FullText;
         public DateTime DateOfPost;
-        public byte[] Image;
+        public string Image;
         public string User;
     }
 }

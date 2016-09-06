@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 
 namespace GenericBackend.Models
 {
@@ -8,7 +9,7 @@ namespace GenericBackend.Models
         public string Summary;
         public string FullText;
         public DateTime DateOfPost;
-        public string Image;
+        public HttpPostedFileBase Image;
         public string User;
     }
 }

@@ -25,7 +25,7 @@ namespace GenericBackend.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult AddArticle(Article article)
+        public IHttpActionResult AddArticle(ArticleModel article)
         //public IHttpActionResult AddArticle(Article article, HttpPostedFileBase photoImg)
         {
             if (article == null)
@@ -39,29 +39,29 @@ namespace GenericBackend.Controllers
                 Headline = article.Headline,
                 DateOfPost = DateTime.UtcNow,
                 FullText = article.FullText,
-                //Image = GetPhoto(photoImg),
+                Image = GetPhoto(article.Image),
                 Summary = article.Summary
             };
             _unitOfWork.Articles.Add(newArticle);
             return Ok();
         }
 
-                [HttpGet]
-               public async Task<IHttpActionResult> Get()
-               {
+        [HttpGet]
+        public async Task<IHttpActionResult> Get()
+        {
 
-                   return Ok(await GetAllArticles());
-               }
+            return Ok(await GetAllArticles());
+        }
 
-               private Task<List<Article>> GetAllArticles()
-               {
-                   var user = UserModel.GetUserInfo(User);
-                   var query = _unitOfWork.Articles.AsQueryable();
-                   if (!user.IsSuperUser)
-                       query = _unitOfWork.Articles.Where(x => x.User == user.Name);
+        private Task<List<Article>> GetAllArticles()
+        {
+            var user = UserModel.GetUserInfo(User);
+            var query = _unitOfWork.Articles.AsQueryable();
+            if (!user.IsSuperUser)
+                query = _unitOfWork.Articles.Where(x => x.User == user.Name);
 
-                   return Task.Factory.StartNew(() => query.ToList());
-               }
+            return Task.Factory.StartNew(() => query.ToList());
+        }
 
         [HttpGet]
         [Route("number/{id}")]
@@ -75,6 +75,22 @@ namespace GenericBackend.Controllers
             {
                 return Ok(ex.Message);
             }
+        }
+
+        private string GetPhoto(HttpPostedFileBase file)
+        {
+            byte[] buffer = null;
+
+            if (file != null && file.ContentLength <= 1 * 1024 * 1024)
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    file.InputStream.CopyTo(ms);
+                    buffer = ms.GetBuffer();
+                }
+            }
+
+            return Convert.ToBase64String(buffer);
         }
 
         #region TestPart
@@ -120,38 +136,22 @@ namespace GenericBackend.Controllers
             });
             return Task.Factory.StartNew(() => query.ToList());
     }*/
+    
+        /*      private string TakePhoto(Image imageIn)
+           {
+               byte[] imageInByteArray = ImageToByteArray(imageIn);
+               return Convert.ToBase64String(imageInByteArray);
+           }
 
-    #endregion
+           private byte[] ImageToByteArray(Image imageIn)
+           {
+               using (var ms = new MemoryStream())
+               {
+                   imageIn.Save(ms, ImageFormat.Png);
+                   return ms.ToArray();
+               }
+           }*/
 
-    private byte[] GetPhoto(HttpPostedFileBase file)
-        {
-            byte[] buffer = null;
-
-            if (file != null && file.ContentLength <= 1 * 1024 * 1024)
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    file.InputStream.CopyTo(ms);
-                    buffer = ms.GetBuffer();
-                }
-            }
-
-            return buffer;
-        }
-        
-        private string TakePhoto(Image imageIn)
-        {
-            byte[] imageInByteArray = ImageToByteArray(imageIn);
-            return Convert.ToBase64String(imageInByteArray);
-        }
-
-        private byte[] ImageToByteArray(Image imageIn)
-        {
-            using (var ms = new MemoryStream())
-            {
-                imageIn.Save(ms, ImageFormat.Png);
-                return ms.ToArray();
-            }
-        }
+#endregion
     }
 }
