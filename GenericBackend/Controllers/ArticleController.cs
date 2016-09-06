@@ -18,6 +18,7 @@ namespace GenericBackend.Controllers
     public class ArticleController : ApiController
     {
         private readonly IUnitOfWork _unitOfWork;
+        private const string stringInfo = "base64,";
 
         public ArticleController(IUnitOfWork unitOfWork)
         {
@@ -25,13 +26,16 @@ namespace GenericBackend.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult AddArticle(ArticleModel article)
-        //public IHttpActionResult AddArticle(Article article, HttpPostedFileBase photoImg)
+        public IHttpActionResult AddArticle(Article article)
         {
             if (article == null)
                 return BadRequest("Article can't be null");
             if (string.IsNullOrEmpty(article.Headline))
                 return BadRequest("Article headline can't be empty");
+            if (!article.Image.StartsWith("data:image"))
+            {
+                return BadRequest("No picture uploaded!");
+            }
             var userName = UserModel.GetUserInfo(User).Name;
             var newArticle = new Article
             {
@@ -39,7 +43,7 @@ namespace GenericBackend.Controllers
                 Headline = article.Headline,
                 DateOfPost = DateTime.UtcNow,
                 FullText = article.FullText,
-                Image = GetPhoto(article.Image),
+                Image = article.Image.Substring(article.Image.IndexOf(stringInfo)+stringInfo.Length),
                 Summary = article.Summary
             };
             _unitOfWork.Articles.Add(newArticle);
@@ -76,82 +80,5 @@ namespace GenericBackend.Controllers
                 return Ok(ex.Message);
             }
         }
-
-        private string GetPhoto(HttpPostedFileBase file)
-        {
-            byte[] buffer = null;
-
-            if (file != null && file.ContentLength <= 1 * 1024 * 1024)
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    file.InputStream.CopyTo(ms);
-                    buffer = ms.GetBuffer();
-                }
-            }
-
-            return Convert.ToBase64String(buffer);
-        }
-
-        #region TestPart
-        /*
-        [HttpGet]
-        public async Task<IHttpActionResult> Get()
-        {
-
-            return Ok(await GetAllArticles());
-        }
-
-        private Task<List<ArticleModel>> GetAllArticles()
-        {
-            var sPath = "";
-            sPath = System.Web.Hosting.HostingEnvironment.MapPath("~/Images/news-image-1.png");
-            var newImage = Image.FromFile(sPath);
-            var sPath2 = System.Web.Hosting.HostingEnvironment.MapPath("~/Images/news-image-2.png");
-            var newImage2= Image.FromFile(sPath2);
-            var article1 = new ArticleModel
-            {
-                Headline = "Test1",
-                DateOfPost = DateTime.UtcNow,
-                Image = TakePhoto(newImage),
-                FullText = "Full Text1",
-                Summary = "Summary1"
-            };
-            var article2 = new ArticleModel
-            {
-                Headline = "Test2",
-                DateOfPost = DateTime.UtcNow,
-                Image = TakePhoto(newImage2),
-                FullText = "Full Text2",
-                Summary = "Summary2"
-            };
-            var newList = new List<ArticleModel> { article1, article2 };
-            var query = newList.AsQueryable();
-            /*_unitOfWork.Articles.Add( new Article
-            {
-                Headline = "Test1",
-                DateOfPost = DateTime.UtcNow,
-                FullText = "Full Text1",
-                Summary = "Summary1"
-            });
-            return Task.Factory.StartNew(() => query.ToList());
-    }*/
-    
-        /*      private string TakePhoto(Image imageIn)
-           {
-               byte[] imageInByteArray = ImageToByteArray(imageIn);
-               return Convert.ToBase64String(imageInByteArray);
-           }
-
-           private byte[] ImageToByteArray(Image imageIn)
-           {
-               using (var ms = new MemoryStream())
-               {
-                   imageIn.Save(ms, ImageFormat.Png);
-                   return ms.ToArray();
-               }
-           }*/
-
-#endregion
     }
 }
